@@ -20,7 +20,8 @@ namespace fusor_control_interface
         {
             private Stream theBaseStream;
 
-            public SafeSerialPort(string portName, int baudRate) : base(portName, baudRate)
+            public SafeSerialPort(string portName, int baudRate)
+                : base(portName, baudRate)
             {
 
             }
@@ -80,11 +81,11 @@ namespace fusor_control_interface
         private void UpdateStatus(bool pump_status, double pressure, bool hv_status, double voltage, double current, double scaler_rate)
         {
             label2.Text = "Status: " + (pump_status ? "Normal" : "Accelerating/Stopped");
-            label5.Text = "mTorr: " + pressure;
-            label8.Text = "HV: " + (hv_status ? "On" : "Off");
-            label9.Text = "kV: " + voltage.ToString("f2");
-            label10.Text = "mA: " + current.ToString("f1");
-            label11.Text = "Rate: " + scaler_rate;
+            label4.Text = "mTorr: " + pressure.ToString("f1");
+            label7.Text = "HV: " + (hv_status ? "On" : "Off");
+            label8.Text = "kV: " + voltage.ToString("f1");
+            label9.Text = "mA: " + current.ToString("f1");
+            label10.Text = "Rate: " + scaler_rate;
         }
 
         private void SerialWrite(string message)
@@ -131,15 +132,15 @@ namespace fusor_control_interface
                 try
                 {
                     serial_port.WriteLine("get pump status");
-                    pump_status = (serial_port.ReadLine() == "1");
+                    pump_status = (serial_port.ReadLine().Substring(0, 1) == "1");
                     serial_port.WriteLine("get pressure");
                     pressure = Convert.ToDouble(serial_port.ReadLine());
                     serial_port.WriteLine("get hv status");
-                    hv_status = (serial_port.ReadLine() == "1");
+                    hv_status = (serial_port.ReadLine().Substring(0, 1) == "1");
                     serial_port.WriteLine("get voltage");
-                    voltage = Math.Round(Convert.ToDouble(serial_port.ReadLine()) * (33.25 / (1023 * 0.95)) + 1.75, 1);
+                    voltage = Convert.ToDouble(serial_port.ReadLine());
                     serial_port.WriteLine("get current");
-                    current = Math.Round(Convert.ToDouble(serial_port.ReadLine()) * (75 / (1023 * 0.95)), 1);
+                    current = Convert.ToDouble(serial_port.ReadLine());
                     serial_port.WriteLine("get scaler rate");
                     scaler_rate = Convert.ToDouble(serial_port.ReadLine());
                     if (run)
@@ -156,7 +157,7 @@ namespace fusor_control_interface
                     run = false;
                 }
                 time += update_interval;
-                sleep = (short) (update_interval - stopwatch.ElapsedMilliseconds);
+                sleep = (short)(update_interval - stopwatch.ElapsedMilliseconds);
                 if (sleep > 0)
                 {
                     Thread.Sleep(sleep);
@@ -349,34 +350,24 @@ namespace fusor_control_interface
             SerialWrite("set pump 0");
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            SerialWrite("set leak 1");
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            SerialWrite("set leak 0");
-        }
-
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            SerialWrite("set pressure " + Math.Round(((double)numericUpDown1.Value * (((1023 * 4.6 / 5) - (1023 * 4 / 5)) / 20)) + (1023 * 4 / 5)));
+            SerialWrite(numericUpDown1.Value.ToString());
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
             SerialWrite("set hv 1");
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
             SerialWrite("set hv 0");
         }
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            SerialWrite("set voltage " + Math.Round(((double) numericUpDown2.Value - 1.75) * (255 / 33.25)));
+            SerialWrite("set voltage " + numericUpDown2.Value);
         }
     }
 }
