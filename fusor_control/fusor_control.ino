@@ -1,119 +1,185 @@
-#include <stdlib.h>
 #include <Servo.h>
 #include <PID_v1.h>
 
-const short
-pump_output = 2,
-voltage_output = 3,
-hv_output = 4,
-regulator_output = 5,
-pump_status_input = 6,
-hv_status_input = 7,
-servo_output = 9,
-regulator_input = A0,
-pressure_input = A1,
-voltage_input = A2,
-current_input = A3,
-scaler_input = A4;
-short i = 0;
+#define BUFFER_SIZE         6
+
+#define PUMP_OUTPUT         2
+#define VOLTAGE_OUTPUT      3
+#define HV_OUTPUT           4
+#define REGULATOR_OUTPUT    5
+#define PUMP_STATUS_INPUT   6
+#define HV_STATUS_INPUT     7
+#define SERVO_OUTPUT        9
+
+#define REGULATOR_INPUT     A0
+#define PRESSURE_INPUT      A1
+#define VOLTAGE_INPUT       A2
+#define CURRENT_INPUT       A3
+#define SCALER_INPUT        A4
+
+short buffer_index = 0;
 double
-regulator_input_value, regulator_output_value, regulator_setpoint = 965, last_regulator_output_value = 0,
-pressure_input_value, pressure_output_value, pressure_setpoint = 760, last_pressure_output_value = 60;
+regulator_input_value, regulator_output_value, regulator_setpoint = 770,
+pressure_input_value, pressure_output_value, pressure_setpoint = 999, last_pressure_output_value = 60;
 unsigned long last_update = millis();
-char buffer[64];
+char buffer[BUFFER_SIZE];
 Servo pressure_servo;
 PID regulator_pid(&regulator_input_value, &regulator_output_value, &regulator_setpoint, 0, 0.1, 0, DIRECT);
 PID pressure_pid(&pressure_input_value, &pressure_output_value, &pressure_setpoint, 3, 0, 0, DIRECT);
 
-void setup() {
-  pinMode(pump_output, OUTPUT);
-  pinMode(voltage_output, OUTPUT);
-  pinMode(hv_output, OUTPUT);
-  pinMode(regulator_output, OUTPUT);
-  pinMode(hv_status_input, INPUT_PULLUP);
-  pinMode(pump_status_input, INPUT_PULLUP);
+void setPwmFrequency(const short pin, const short divisor)
+{
+  byte setting;
 
-  TCCR0B = TCCR0B & 0b11111000 | 0x01;
-  pressure_servo.attach(servo_output);
+  if (pin == 5 || pin == 6 || pin == 9 || pin == 10)
+  {
+    switch (divisor)
+    {
+    case 1: 
+      setting = 0x01; 
+      break;
+    case 8: 
+      setting = 0x02; 
+      break;
+    case 64: 
+      setting = 0x03; 
+      break;
+    case 256: 
+      setting = 0x04; 
+      break;
+    case 1024: 
+      setting = 0x05;
+      break;
+    default:
+      return;
+    }
+
+    if (pin == 5 || pin == 6)
+    {
+      TCCR0B = TCCR0B & 0b11111000 | setting;
+    }
+    else
+    {
+      TCCR1B = TCCR1B & 0b11111000 | setting;
+    }
+  }
+  else
+  {
+    switch (divisor)
+    {
+    case 1: 
+      setting = 0x01; 
+      break;
+    case 8: 
+      setting = 0x02; 
+      break;
+    case 32: 
+      setting = 0x03; 
+      break;
+    case 64: 
+      setting = 0x04; 
+      break;
+    case 128: 
+      setting = 0x05; 
+      break;
+    case 256: 
+      setting = 0x06; 
+      break;
+    case 1024: 
+      setting = 0x07; 
+      break;
+    default: 
+      return;
+    }
+    TCCR2B = TCCR2B & 0b11111000 | setting;
+  }
+}
+
+void setup()
+{
+  pinMode(PUMP_OUTPUT, OUTPUT);
+  pinMode(VOLTAGE_OUTPUT, OUTPUT);
+  pinMode(HV_OUTPUT, OUTPUT);
+  pinMode(REGULATOR_OUTPUT, OUTPUT);
+  pinMode(HV_STATUS_INPUT, INPUT_PULLUP);
+  pinMode(PUMP_STATUS_INPUT, INPUT_PULLUP);
+
+  setPwmFrequency(VOLTAGE_OUTPUT, 8);
+  setPwmFrequency(REGULATOR_OUTPUT, 1);
+
+  pressure_servo.attach(SERVO_OUTPUT);
   regulator_pid.SetMode(AUTOMATIC);
   pressure_pid.SetMode(AUTOMATIC);
   pressure_pid.SetOutputLimits(0, 60);
 
-  Serial.begin(57600);
+  Serial.begin(115200);
 }
 
-void setRealy(const short output, const char *string) {
-  if (strtol(string, NULL, 10)) {
-    digitalWrite(output, HIGH);
-  } 
-  else {
-    digitalWrite(output, LOW);
-  } 
-}
-
-void loop() {
-  regulator_input_value = analogRead(regulator_input);
+void loop()
+{
+  regulator_input_value = analogRead(REGULATOR_INPUT);
   regulator_pid.Compute();
-  analogWrite(regulator_output, regulator_output_value);
+  analogWrite(REGULATOR_OUTPUT, regulator_output_value);
 
-  pressure_input_value = analogRead(pressure_input);
+  pressure_input_value = analogRead(PRESSURE_INPUT);
   pressure_pid.Compute();
 
-  if (millis() - last_update > 3000) {
-    if (pressure_output_value > last_pressure_output_value) {
+  if (millis() - last_update >= 3000)
+  {
+    if (pressure_output_value > last_pressure_output_value)
+    {
       pressure_servo.write(++last_pressure_output_value);
     } 
-    else {
+    else
+    {
       pressure_servo.write(--last_pressure_output_value);
     }
     last_update = millis();
   }
 
-  while (Serial.available()) {
-    buffer[i] = Serial.read();
-    i++;
-    if (i > 1 && buffer[i - 1] == '\n') {
-      if (!memcmp(buffer, "get pump status", 15)) {
-        Serial.println((!digitalRead(pump_status_input)));
+  while (Serial.available())
+  {
+    buffer[buffer_index] = Serial.read();
+    buffer_index++;
+    if (buffer_index > 1 && buffer[buffer_index - 1] == '\n')
+    {
+      switch (atol(buffer))
+      {
+      case 0:
+        Serial.println(!digitalRead(PUMP_STATUS_INPUT));
+        break;
+      case 1:
+        Serial.println(analogRead(PRESSURE_INPUT));
+        break;
+      case 2:
+        Serial.println(!digitalRead(HV_STATUS_INPUT));
+        break;
+      case 3:
+        Serial.println(analogRead(VOLTAGE_INPUT));
+        break;
+      case 4:
+        Serial.println(analogRead(CURRENT_INPUT));
+        break;
+      case 5:
+        Serial.println(analogRead(SCALER_INPUT));
+        break;
+      case 6:
+        digitalWrite(PUMP_OUTPUT, atol(&buffer[2]) ? HIGH : LOW);
+        break;
+      case 7:
+        pressure_setpoint = atol(&buffer[2]);
+        break;
+      case 8:
+        digitalWrite(HV_OUTPUT, atol(&buffer[2]) ? HIGH : LOW);
+        break;
+      case 9:
+        analogWrite(VOLTAGE_OUTPUT, atol(&buffer[2]));
       } 
-      else if (!memcmp(buffer, "get pressure", 12)) {
-        Serial.println(analogRead(pressure_input));
-      } 
-      else if (!memcmp(buffer, "get hv status", 13)) {
-        Serial.println((!digitalRead(hv_status_input)));
-      } 
-      else if (!memcmp(buffer, "get voltage", 11)) {
-        Serial.println(analogRead(voltage_input));
-      } 
-      else if (!memcmp(buffer, "get current", 11)) {
-        Serial.println(analogRead(current_input));
-      } 
-      else if (!memcmp(buffer, "get scaler rate", 15)) {
-        Serial.println(analogRead(scaler_input));
-      } 
-      else if (!memcmp(buffer, "set pump ", 9)) {
-        setRealy(pump_output, &buffer[9]);
-      } 
-      else if (!memcmp(buffer, "set pressure ", 13)) {
-        pressure_setpoint = strtol(&buffer[13], NULL, 10);
-      }
-      else if (!memcmp(buffer, "set hv ", 7)) {
-        setRealy(hv_output, &buffer[7]);
-      } 
-      else if (!memcmp(buffer, "set voltage ", 12)) {
-        analogWrite(voltage_output, strtol(&buffer[12], NULL, 10));
-      } 
-      i = 0;
+      buffer_index = 0;
     } 
-    else if (i >= 64) {
-      i = 0;
+    else if (buffer_index >= BUFFER_SIZE)
+    {
+      buffer_index = 0;
     }
   }
 }
-
-
-
-
-
-
-

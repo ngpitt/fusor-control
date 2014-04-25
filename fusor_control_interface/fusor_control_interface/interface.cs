@@ -67,16 +67,18 @@ namespace fusor_control_interface
             }
         }
 
-        private bool run = true, log = false;
+        private bool run = false, log = false;
         private string port_name = null;
         private ushort update_interval = 250;
-        private ulong time = 0;
+        private ulong time;
         private SafeSerialPort serial_port;
         private Thread update_thread = null;
         private StreamWriter log_file = null;
         private SaveFileDialog save_file_dialog;
         private delegate void StatusUpdateDelagate(bool pump_status, double pressure, bool hv_status, double voltage, double current, double scaler_rate);
+        private delegate void CleanupDelagate();
         private StatusUpdateDelagate update_delagate;
+        private CleanupDelagate cleanup_delagate;
 
         private void UpdateStatus(bool pump_status, double pressure, bool hv_status, double voltage, double current, double scaler_rate)
         {
@@ -88,6 +90,27 @@ namespace fusor_control_interface
             label10.Text = "Rate: " + scaler_rate;
         }
 
+        private void Cleanup()
+        {
+            run = false;
+            update_thread.Join();
+            serial_port.Dispose();
+
+            if (log_file != null)
+            {
+                log_file.Close();
+                log_file = null;
+            }
+
+            SetControls(false);
+            menuStrip1.Enabled = true;
+            portsToolStripMenuItem.Enabled = true;
+            connectToolStripMenuItem.Enabled = true;
+            disconnectToolStripMenuItem.Enabled = false;
+            loggingToolStripMenuItem.Enabled = true;
+            updateIntervalToolStripMenuItem.Enabled = true;
+        }
+
         private void SerialWrite(string message)
         {
             try
@@ -96,20 +119,7 @@ namespace fusor_control_interface
             }
             catch
             {
-                run = false;
-                update_thread.Join();
-                serial_port.Dispose();
-                if (log_file != null)
-                {
-                    log_file.Close();
-                    log_file = null;
-                }
-                SetControls(this, false);
-                menuStrip1.Enabled = true;
-                portsToolStripMenuItem.Enabled = true;
-                connectToolStripMenuItem.Enabled = true;
-                disconnectToolStripMenuItem.Enabled = false;
-                loggingToolStripMenuItem.Enabled = true;
+                Cleanup();
                 MessageBox.Show("Serial port disconnected.", "Reactor Control", MessageBoxButtons.OK);
             }
         }
@@ -122,31 +132,34 @@ namespace fusor_control_interface
             Stopwatch stopwatch = new Stopwatch();
 
             run = true;
+            time = 0;
+
             if (log_file != null)
             {
                 log_file.WriteLine("Time (ms),Pressure (mTorr),Voltage (kV),Current (mA),Scaler Rate");
             }
+
             while (run)
             {
                 stopwatch.Restart();
+
                 try
                 {
-                    serial_port.WriteLine("get pump status");
+                    serial_port.WriteLine("0");
                     pump_status = (serial_port.ReadLine().Substring(0, 1) == "1");
-                    serial_port.WriteLine("get pressure");
+                    serial_port.WriteLine("1");
                     pressure = Convert.ToDouble(serial_port.ReadLine());
-                    serial_port.WriteLine("get hv status");
+                    serial_port.WriteLine("2");
                     hv_status = (serial_port.ReadLine().Substring(0, 1) == "1");
-                    serial_port.WriteLine("get voltage");
+                    serial_port.WriteLine("3");
                     voltage = Convert.ToDouble(serial_port.ReadLine());
-                    serial_port.WriteLine("get current");
+                    serial_port.WriteLine("4");
                     current = Convert.ToDouble(serial_port.ReadLine());
-                    serial_port.WriteLine("get scaler rate");
+                    serial_port.WriteLine("5");
                     scaler_rate = Convert.ToDouble(serial_port.ReadLine());
-                    if (run)
-                    {
-                        this.Invoke(update_delagate, pump_status, pressure, hv_status, voltage, current, scaler_rate);
-                    }
+
+                    this.BeginInvoke(update_delagate, pump_status, pressure, hv_status, voltage, current, scaler_rate);
+
                     if (log_file != null)
                     {
                         log_file.WriteLine(time + "," + pressure + "," + voltage + "," + current + "," + scaler_rate);
@@ -154,10 +167,13 @@ namespace fusor_control_interface
                 }
                 catch
                 {
-                    run = false;
+                    this.BeginInvoke(cleanup_delagate);
+                    MessageBox.Show("Serial port disconnected.", "Reactor Control", MessageBoxButtons.OK);
                 }
+
                 time += update_interval;
                 sleep = (short)(update_interval - stopwatch.ElapsedMilliseconds);
+
                 if (sleep > 0)
                 {
                     Thread.Sleep(sleep);
@@ -165,15 +181,15 @@ namespace fusor_control_interface
             }
         }
 
-        private void SetControls(Control controls, bool value)
+        private void SetControls(bool value)
         {
-            foreach (Control control in controls.Controls)
+            foreach (Control control in this.Controls)
             {
                 control.Enabled = value;
             }
         }
 
-        private void RefreshPorts(object sender, EventArgs e)
+        private void RefreshPorts()
         {
             bool found = false;
             string[] ports = SafeSerialPort.GetPortNames();
@@ -182,23 +198,27 @@ namespace fusor_control_interface
             items[0] = new ToolStripMenuItem();
             items[0].Text = "Refresh";
             items[0].ShortcutKeys = Keys.Control | Keys.R;
-            items[0].Click += new EventHandler(RefreshPorts);
+            items[0].Click += new EventHandler(refreshToolStripMenuItem_Click);
+
             for (int i = 1; i < items.Length; i++)
             {
                 items[i] = new ToolStripMenuItem();
                 items[i].Text = ports[i - 1];
                 items[i].Tag = ports[i - 1];
                 items[i].Click += new EventHandler(portsToolStripMenuItem_Click);
+
                 if (ports[i - 1] == port_name)
                 {
                     items[i].Checked = true;
                     found = true;
                 }
             }
+
             if (!found)
             {
                 port_name = null;
             }
+
             portsToolStripMenuItem.DropDownItems.Clear();
             portsToolStripMenuItem.DropDownItems.AddRange(items);
             serialToolStripMenuItem.ShowDropDown();
@@ -208,19 +228,27 @@ namespace fusor_control_interface
         public Form1()
         {
             InitializeComponent();
+
             this.FormClosing += new FormClosingEventHandler(Form1_Close);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+
             save_file_dialog = new SaveFileDialog();
-            save_file_dialog.Filter = "csv file (*.csv)|*.csv";
+            save_file_dialog.Filter = "CSV (*.csv)|*.csv";
+            save_file_dialog.DefaultExt = "csv";
+
             update_delagate = new StatusUpdateDelagate(UpdateStatus);
-            RefreshPorts(null, null);
+            cleanup_delagate = new CleanupDelagate(Cleanup);
+
+            RefreshPorts();
+
             foreach (ToolStripMenuItem item in updateIntervalToolStripMenuItem.DropDownItems)
             {
                 item.Click += new EventHandler(updateIntervalToolStripMenuItem_Click);
             }
-            SetControls(this, false);
+
+            SetControls(false);
             menuStrip1.Enabled = true;
             disconnectToolStripMenuItem.Enabled = false;
         }
@@ -231,9 +259,7 @@ namespace fusor_control_interface
             {
                 if (MessageBox.Show("Do you really want to quit?", "Reactor Control", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    run = false;
-                    update_thread.Join();
-                    serial_port.Close();
+                    Cleanup();
                 }
                 else
                 {
@@ -241,9 +267,13 @@ namespace fusor_control_interface
                     return;
                 }
             }
-            if (log_file != null)
+        }
+
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!run)
             {
-                log_file.Close();
+                RefreshPorts();
             }
         }
 
@@ -252,11 +282,14 @@ namespace fusor_control_interface
             ToolStripMenuItem port = (ToolStripMenuItem)sender;
 
             port_name = port.Tag.ToString();
+
             foreach (ToolStripMenuItem item in portsToolStripMenuItem.DropDownItems)
             {
                 item.Checked = false;
             }
+
             port.Checked = true;
+
             serialToolStripMenuItem.ShowDropDown();
         }
 
@@ -264,13 +297,16 @@ namespace fusor_control_interface
         {
             if (port_name == null)
             {
+                serialToolStripMenuItem.ShowDropDown();
+                portsToolStripMenuItem.ShowDropDown();
                 MessageBox.Show("No serial port selected.", "Reactor Control", MessageBoxButtons.OK);
             }
             else
             {
-                serial_port = new SafeSerialPort(port_name, 57600);
+                serial_port = new SafeSerialPort(port_name, 115200);
                 serial_port.ReadTimeout = 1000;
                 serial_port.WriteTimeout = 1000;
+
                 try
                 {
                     serial_port.Open();
@@ -279,6 +315,7 @@ namespace fusor_control_interface
                 {
                     MessageBox.Show("Serial device not found.", "Reactor Control", MessageBoxButtons.OK);
                 }
+
                 if (log)
                 {
                     try
@@ -291,33 +328,22 @@ namespace fusor_control_interface
                     }
                     log = false;
                 }
-                time = 0;
+
                 update_thread = new Thread(UpdateThread);
                 update_thread.Start();
-                SetControls(this, true);
+
+                SetControls(true);
                 portsToolStripMenuItem.Enabled = false;
                 connectToolStripMenuItem.Enabled = false;
                 disconnectToolStripMenuItem.Enabled = true;
                 loggingToolStripMenuItem.Enabled = false;
+                updateIntervalToolStripMenuItem.Enabled = false;
             }
         }
 
         private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            run = false;
-            update_thread.Join();
-            serial_port.Close();
-            if (log_file != null)
-            {
-                log_file.Close();
-                log_file = null;
-            }
-            SetControls(this, false);
-            menuStrip1.Enabled = true;
-            portsToolStripMenuItem.Enabled = true;
-            connectToolStripMenuItem.Enabled = true;
-            disconnectToolStripMenuItem.Enabled = false;
-            loggingToolStripMenuItem.Enabled = true;
+            Cleanup();
         }
 
         private void saveToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -333,41 +359,43 @@ namespace fusor_control_interface
             ToolStripMenuItem interval = (ToolStripMenuItem)sender;
 
             update_interval = Convert.ToUInt16(interval.Tag.ToString());
+
             foreach (ToolStripMenuItem item in updateIntervalToolStripMenuItem.DropDownItems)
             {
                 item.Checked = false;
             }
+
             interval.Checked = true;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SerialWrite("set pump 1");
+            SerialWrite("6 1");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            SerialWrite("set pump 0");
+            SerialWrite("6 0");
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            SerialWrite(numericUpDown1.Value.ToString());
+            SerialWrite("7 " + numericUpDown1.Value);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            SerialWrite("set hv 1");
+            SerialWrite("8 1");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            SerialWrite("set hv 0");
+            SerialWrite("8 0");
         }
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            SerialWrite("set voltage " + numericUpDown2.Value);
+            SerialWrite("9 " + numericUpDown2.Value);
         }
     }
 }
