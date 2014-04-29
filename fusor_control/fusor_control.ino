@@ -1,116 +1,58 @@
 #include <Servo.h>
 #include <PID_v1.h>
 
-#define BUFFER_SIZE         6
+#define PUMP_OUTPUT             3
+#define HV_OUTPUT               4
+#define REGULATOR_OUTPUT        5
+#define VOLTAGE_OUTPUT          6
+#define PUMP_INPUT              7
+#define HV_INPUT                8
+#define SERVO_OUTPUT            9
 
-#define PUMP_OUTPUT         2
-#define VOLTAGE_OUTPUT      3
-#define HV_OUTPUT           4
-#define REGULATOR_OUTPUT    5
-#define PUMP_STATUS_INPUT   6
-#define HV_STATUS_INPUT     7
-#define SERVO_OUTPUT        9
+#define REGULATOR_INPUT         A0
+#define PRESSURE_INPUT          A1
+#define VOLTAGE_INPUT           A2
+#define CURRENT_INPUT           A3
+#define COUNT_INPUT             A4
 
-#define REGULATOR_INPUT     A0
-#define PRESSURE_INPUT      A1
-#define VOLTAGE_INPUT       A2
-#define CURRENT_INPUT       A3
-#define SCALER_INPUT        A4
+#define SET_REGULATOR_SETPOINT  1
+#define SET_REGULATOR_TUNINGS   2
+#define SET_PRESSURE_SETPOINT   3
+#define SET_PRESSURE_TUNINGS    4
+#define SET_PRESSURE_LIMITS     5
+#define SET_PUMP_OUTPUT         6
+#define SET_HV_OUTPUT           7
+#define SET_VOLTAGE_OUTPUT      8
 
-short buffer_index = 0;
-double
-regulator_input_value, regulator_output_value, regulator_setpoint = 770,
-pressure_input_value, pressure_output_value, pressure_setpoint = 999, last_pressure_output_value = 60;
+#define GET_PUMP_INPUT          9
+#define GET_HV_INPUT            10
+#define GET_PRESSURE_INPUT      11
+#define GET_VOLTAGE_INPUT       12
+#define GET_CURRENT_INPUT       13
+#define GET_COUNT_INPUT         14
+
+int buffer_index = 0;
+double regulator_input_value, regulator_output_value, regulator_setpoint = 0,
+pressure_input_value, pressure_output_value, pressure_setpoint = 0, last_pressure_output_value = 0;
 unsigned long last_update = millis();
-char buffer[BUFFER_SIZE];
 Servo pressure_servo;
-PID regulator_pid(&regulator_input_value, &regulator_output_value, &regulator_setpoint, 0, 0.1, 0, DIRECT);
-PID pressure_pid(&pressure_input_value, &pressure_output_value, &pressure_setpoint, 3, 0, 0, DIRECT);
-
-void setPwmFrequency(const short pin, const short divisor)
-{
-  byte setting;
-
-  if (pin == 5 || pin == 6 || pin == 9 || pin == 10)
-  {
-    switch (divisor)
-    {
-    case 1: 
-      setting = 0x01; 
-      break;
-    case 8: 
-      setting = 0x02; 
-      break;
-    case 64: 
-      setting = 0x03; 
-      break;
-    case 256: 
-      setting = 0x04; 
-      break;
-    case 1024: 
-      setting = 0x05;
-      break;
-    default:
-      return;
-    }
-
-    if (pin == 5 || pin == 6)
-    {
-      TCCR0B = TCCR0B & 0b11111000 | setting;
-    }
-    else
-    {
-      TCCR1B = TCCR1B & 0b11111000 | setting;
-    }
-  }
-  else
-  {
-    switch (divisor)
-    {
-    case 1: 
-      setting = 0x01; 
-      break;
-    case 8: 
-      setting = 0x02; 
-      break;
-    case 32: 
-      setting = 0x03; 
-      break;
-    case 64: 
-      setting = 0x04; 
-      break;
-    case 128: 
-      setting = 0x05; 
-      break;
-    case 256: 
-      setting = 0x06; 
-      break;
-    case 1024: 
-      setting = 0x07; 
-      break;
-    default: 
-      return;
-    }
-    TCCR2B = TCCR2B & 0b11111000 | setting;
-  }
-}
+PID regulator_pid(&regulator_input_value, &regulator_output_value, &regulator_setpoint, 0, 0, 0, DIRECT);
+PID pressure_pid(&pressure_input_value, &pressure_output_value, &pressure_setpoint, 0, 0, 0, DIRECT);
 
 void setup()
 {
   pinMode(PUMP_OUTPUT, OUTPUT);
-  pinMode(VOLTAGE_OUTPUT, OUTPUT);
   pinMode(HV_OUTPUT, OUTPUT);
   pinMode(REGULATOR_OUTPUT, OUTPUT);
-  pinMode(HV_STATUS_INPUT, INPUT_PULLUP);
-  pinMode(PUMP_STATUS_INPUT, INPUT_PULLUP);
+  pinMode(VOLTAGE_OUTPUT, OUTPUT);
+  pinMode(PUMP_INPUT, INPUT_PULLUP);
+  pinMode(HV_INPUT, INPUT_PULLUP);
 
-  setPwmFrequency(VOLTAGE_OUTPUT, 8);
-  setPwmFrequency(REGULATOR_OUTPUT, 1);
+  TCCR0B = TCCR0B & 0b11111000 | 0x01;
 
   pressure_servo.attach(SERVO_OUTPUT);
   regulator_pid.SetMode(AUTOMATIC);
   pressure_pid.SetMode(AUTOMATIC);
-  pressure_pid.SetOutputLimits(0, 60);
 
   Serial.begin(115200);
 }
@@ -139,47 +81,49 @@ void loop()
 
   while (Serial.available())
   {
-    buffer[buffer_index] = Serial.read();
-    buffer_index++;
-    if (buffer_index > 1 && buffer[buffer_index - 1] == '\n')
+    switch (Serial.parseInt())
     {
-      switch (atol(buffer))
-      {
-      case 0:
-        Serial.println(!digitalRead(PUMP_STATUS_INPUT));
-        break;
-      case 1:
-        Serial.println(analogRead(PRESSURE_INPUT));
-        break;
-      case 2:
-        Serial.println(!digitalRead(HV_STATUS_INPUT));
-        break;
-      case 3:
-        Serial.println(analogRead(VOLTAGE_INPUT));
-        break;
-      case 4:
-        Serial.println(analogRead(CURRENT_INPUT));
-        break;
-      case 5:
-        Serial.println(analogRead(SCALER_INPUT));
-        break;
-      case 6:
-        digitalWrite(PUMP_OUTPUT, atol(&buffer[2]) ? HIGH : LOW);
-        break;
-      case 7:
-        pressure_setpoint = atol(&buffer[2]);
-        break;
-      case 8:
-        digitalWrite(HV_OUTPUT, atol(&buffer[2]) ? HIGH : LOW);
-        break;
-      case 9:
-        analogWrite(VOLTAGE_OUTPUT, atol(&buffer[2]));
-      } 
-      buffer_index = 0;
-    } 
-    else if (buffer_index >= BUFFER_SIZE)
-    {
-      buffer_index = 0;
+    case SET_REGULATOR_SETPOINT:
+      pressure_setpoint = Serial.parseInt();
+      break;
+    case SET_REGULATOR_TUNINGS:
+      regulator_pid.SetTunings(Serial.parseInt(), Serial.parseInt(), Serial.parseInt());
+      break;
+    case SET_PRESSURE_SETPOINT:
+      pressure_setpoint = Serial.parseInt();
+      break;
+    case SET_PRESSURE_TUNINGS:
+      pressure_pid.SetTunings(Serial.parseInt(), Serial.parseInt(), Serial.parseInt());
+      break;
+    case SET_PRESSURE_LIMITS:
+      pressure_pid.SetOutputLimits(Serial.parseInt(), Serial.parseInt());
+      break;
+    case SET_PUMP_OUTPUT:
+      digitalWrite(PUMP_OUTPUT, Serial.parseInt() ? HIGH : LOW);
+      break;
+    case SET_HV_OUTPUT:
+      digitalWrite(HV_OUTPUT, Serial.parseInt() ? HIGH : LOW);
+      break;
+    case SET_VOLTAGE_OUTPUT:
+      analogWrite(VOLTAGE_OUTPUT, Serial.parseInt());
+      break;
+    case GET_PUMP_INPUT:
+      Serial.println(!digitalRead(PUMP_INPUT));
+      break;
+    case GET_HV_INPUT:
+      Serial.println(!digitalRead(HV_INPUT));
+      break;
+    case GET_PRESSURE_INPUT:
+      Serial.println(analogRead(PRESSURE_INPUT));
+      break;
+    case GET_VOLTAGE_INPUT:
+      Serial.println(analogRead(VOLTAGE_INPUT));
+      break;
+    case GET_CURRENT_INPUT:
+      Serial.println(analogRead(CURRENT_INPUT));
+      break;
+    case GET_COUNT_INPUT:
+      Serial.println(analogRead(COUNT_INPUT));
     }
   }
 }

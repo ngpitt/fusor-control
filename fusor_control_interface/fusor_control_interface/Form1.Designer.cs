@@ -42,17 +42,18 @@
             this.label10 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.serialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.portsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.portToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateIntervalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.msToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.msToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.msToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.msToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.msToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateIntervalToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateIntervalToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateIntervalToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateIntervalToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateIntervalToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveLogAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calibrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
@@ -145,7 +146,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(154, 66);
+            this.label8.Location = new System.Drawing.Point(165, 66);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(23, 13);
             this.label8.TabIndex = 23;
@@ -155,7 +156,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(253, 66);
+            this.label9.Location = new System.Drawing.Point(283, 66);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(25, 13);
             this.label9.TabIndex = 24;
@@ -175,39 +176,30 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(24, 30);
+            this.label10.Location = new System.Drawing.Point(19, 30);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(33, 13);
+            this.label10.Size = new System.Drawing.Size(38, 13);
             this.label10.TabIndex = 27;
-            this.label10.Text = "Rate:";
+            this.label10.Text = "Count:";
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.serialToolStripMenuItem,
-            this.loggingToolStripMenuItem,
-            this.updateIntervalToolStripMenuItem});
+            this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(442, 24);
             this.menuStrip1.TabIndex = 28;
-            this.menuStrip1.Text = "menuStrip1";
             // 
             // serialToolStripMenuItem
             // 
             this.serialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.portsToolStripMenuItem,
             this.connectToolStripMenuItem,
             this.disconnectToolStripMenuItem});
             this.serialToolStripMenuItem.Name = "serialToolStripMenuItem";
             this.serialToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.serialToolStripMenuItem.Text = "Serial";
-            // 
-            // portsToolStripMenuItem
-            // 
-            this.portsToolStripMenuItem.Name = "portsToolStripMenuItem";
-            this.portsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.portsToolStripMenuItem.Text = "Ports";
             // 
             // connectToolStripMenuItem
             // 
@@ -225,71 +217,89 @@
             this.disconnectToolStripMenuItem.Text = "Disconnect";
             this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.disconnectToolStripMenuItem_Click);
             // 
-            // loggingToolStripMenuItem
+            // settingsToolStripMenuItem
             // 
-            this.loggingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveAsToolStripMenuItem});
-            this.loggingToolStripMenuItem.Name = "loggingToolStripMenuItem";
-            this.loggingToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.loggingToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
-            this.loggingToolStripMenuItem.Text = "Logging";
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.portToolStripMenuItem,
+            this.updateIntervalToolStripMenuItem,
+            this.saveLogAsToolStripMenuItem,
+            this.calibrationToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
             // 
-            // saveAsToolStripMenuItem
+            // portToolStripMenuItem
             // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.saveAsToolStripMenuItem.Text = "Save To...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveToToolStripMenuItem_Click);
+            this.portToolStripMenuItem.Name = "portToolStripMenuItem";
+            this.portToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.portToolStripMenuItem.Text = "Port";
             // 
             // updateIntervalToolStripMenuItem
             // 
             this.updateIntervalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.msToolStripMenuItem1,
-            this.msToolStripMenuItem2,
-            this.msToolStripMenuItem3,
-            this.msToolStripMenuItem4,
-            this.msToolStripMenuItem5});
+            this.updateIntervalToolStripMenuItem1,
+            this.updateIntervalToolStripMenuItem2,
+            this.updateIntervalToolStripMenuItem3,
+            this.updateIntervalToolStripMenuItem4,
+            this.updateIntervalToolStripMenuItem5});
             this.updateIntervalToolStripMenuItem.Name = "updateIntervalToolStripMenuItem";
-            this.updateIntervalToolStripMenuItem.Size = new System.Drawing.Size(99, 20);
+            this.updateIntervalToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.updateIntervalToolStripMenuItem.Text = "Update Interval";
             // 
-            // msToolStripMenuItem1
+            // updateIntervalToolStripMenuItem1
             // 
-            this.msToolStripMenuItem1.Name = "msToolStripMenuItem1";
-            this.msToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
-            this.msToolStripMenuItem1.Tag = "50";
-            this.msToolStripMenuItem1.Text = "50 ms";
+            this.updateIntervalToolStripMenuItem1.Name = "updateIntervalToolStripMenuItem1";
+            this.updateIntervalToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.updateIntervalToolStripMenuItem1.Tag = "50";
+            this.updateIntervalToolStripMenuItem1.Text = "50 ms";
+            this.updateIntervalToolStripMenuItem1.Click += new System.EventHandler(this.updateIntervalToolStripMenuItem_Click);
             // 
-            // msToolStripMenuItem2
+            // updateIntervalToolStripMenuItem2
             // 
-            this.msToolStripMenuItem2.Name = "msToolStripMenuItem2";
-            this.msToolStripMenuItem2.Size = new System.Drawing.Size(117, 22);
-            this.msToolStripMenuItem2.Tag = "100";
-            this.msToolStripMenuItem2.Text = "100 ms";
+            this.updateIntervalToolStripMenuItem2.Name = "updateIntervalToolStripMenuItem2";
+            this.updateIntervalToolStripMenuItem2.Size = new System.Drawing.Size(117, 22);
+            this.updateIntervalToolStripMenuItem2.Tag = "100";
+            this.updateIntervalToolStripMenuItem2.Text = "100 ms";
+            this.updateIntervalToolStripMenuItem2.Click += new System.EventHandler(this.updateIntervalToolStripMenuItem_Click);
             // 
-            // msToolStripMenuItem3
+            // updateIntervalToolStripMenuItem3
             // 
-            this.msToolStripMenuItem3.Checked = true;
-            this.msToolStripMenuItem3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.msToolStripMenuItem3.Name = "msToolStripMenuItem3";
-            this.msToolStripMenuItem3.Size = new System.Drawing.Size(117, 22);
-            this.msToolStripMenuItem3.Tag = "250";
-            this.msToolStripMenuItem3.Text = "250 ms";
+            this.updateIntervalToolStripMenuItem3.Name = "updateIntervalToolStripMenuItem3";
+            this.updateIntervalToolStripMenuItem3.Size = new System.Drawing.Size(117, 22);
+            this.updateIntervalToolStripMenuItem3.Tag = "250";
+            this.updateIntervalToolStripMenuItem3.Text = "250 ms";
+            this.updateIntervalToolStripMenuItem3.Click += new System.EventHandler(this.updateIntervalToolStripMenuItem_Click);
             // 
-            // msToolStripMenuItem4
+            // updateIntervalToolStripMenuItem4
             // 
-            this.msToolStripMenuItem4.Name = "msToolStripMenuItem4";
-            this.msToolStripMenuItem4.Size = new System.Drawing.Size(117, 22);
-            this.msToolStripMenuItem4.Tag = "500";
-            this.msToolStripMenuItem4.Text = "500 ms";
+            this.updateIntervalToolStripMenuItem4.Name = "updateIntervalToolStripMenuItem4";
+            this.updateIntervalToolStripMenuItem4.Size = new System.Drawing.Size(117, 22);
+            this.updateIntervalToolStripMenuItem4.Tag = "500";
+            this.updateIntervalToolStripMenuItem4.Text = "500 ms";
+            this.updateIntervalToolStripMenuItem4.Click += new System.EventHandler(this.updateIntervalToolStripMenuItem_Click);
             // 
-            // msToolStripMenuItem5
+            // updateIntervalToolStripMenuItem5
             // 
-            this.msToolStripMenuItem5.Name = "msToolStripMenuItem5";
-            this.msToolStripMenuItem5.Size = new System.Drawing.Size(117, 22);
-            this.msToolStripMenuItem5.Tag = "1000";
-            this.msToolStripMenuItem5.Text = "1000 ms";
+            this.updateIntervalToolStripMenuItem5.Name = "updateIntervalToolStripMenuItem5";
+            this.updateIntervalToolStripMenuItem5.Size = new System.Drawing.Size(117, 22);
+            this.updateIntervalToolStripMenuItem5.Tag = "1000";
+            this.updateIntervalToolStripMenuItem5.Text = "1000 ms";
+            this.updateIntervalToolStripMenuItem5.Click += new System.EventHandler(this.updateIntervalToolStripMenuItem_Click);
+            // 
+            // saveLogAsToolStripMenuItem
+            // 
+            this.saveLogAsToolStripMenuItem.Name = "saveLogAsToolStripMenuItem";
+            this.saveLogAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveLogAsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.saveLogAsToolStripMenuItem.Text = "Save Log As";
+            this.saveLogAsToolStripMenuItem.Click += new System.EventHandler(this.saveLogAsToolStripMenuItem_Click);
+            // 
+            // calibrationToolStripMenuItem
+            // 
+            this.calibrationToolStripMenuItem.Name = "calibrationToolStripMenuItem";
+            this.calibrationToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.calibrationToolStripMenuItem.Text = "Calibration";
+            this.calibrationToolStripMenuItem.Click += new System.EventHandler(this.calibrationToolStripMenuItem_Click);
             // 
             // groupBox3
             // 
@@ -301,7 +311,7 @@
             this.groupBox3.Controls.Add(this.button3);
             this.groupBox3.Controls.Add(this.button4);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(20, 179);
+            this.groupBox3.Location = new System.Drawing.Point(20, 178);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(400, 100);
             this.groupBox3.TabIndex = 3;
@@ -337,7 +347,7 @@
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(20, 37);
+            this.groupBox1.Location = new System.Drawing.Point(20, 36);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(400, 65);
             this.groupBox1.TabIndex = 1;
@@ -349,12 +359,12 @@
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.numericUpDown1);
-            this.groupBox2.Location = new System.Drawing.Point(20, 108);
+            this.groupBox2.Location = new System.Drawing.Point(20, 107);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(400, 65);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Gas Pressure";
+            this.groupBox2.Text = "Reactor Pressure";
             // 
             // label4
             // 
@@ -392,7 +402,7 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Location = new System.Drawing.Point(20, 285);
+            this.groupBox4.Location = new System.Drawing.Point(20, 284);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(400, 63);
             this.groupBox4.TabIndex = 4;
@@ -444,10 +454,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem serialToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem portsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.NumericUpDown numericUpDown2;
@@ -456,15 +462,20 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.ToolStripMenuItem loggingToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem updateIntervalToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem msToolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem msToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem msToolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem msToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem msToolStripMenuItem1;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem portToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateIntervalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateIntervalToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem updateIntervalToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem updateIntervalToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem updateIntervalToolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem updateIntervalToolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem saveLogAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem serialToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem calibrationToolStripMenuItem;
     }
 }
 
