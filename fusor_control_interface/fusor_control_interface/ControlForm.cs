@@ -10,7 +10,7 @@ namespace fusor_control_interface
 {
     enum Commands
     {
-        SET_REGULATOR_SETPOINT,
+        SET_REGULATOR_SETPOINT = 1,
         SET_REGULATOR_TUNINGS,
         SET_PRESSURE_SETPOINT,
         SET_PRESSURE_TUNINGS,
@@ -113,6 +113,15 @@ namespace fusor_control_interface
             splines = Properties.Settings.Default.Splines;
             constants = Properties.Settings.Default.Constants;
 
+            for (int i = 0; i < splines[(int)Splines.VOLTAGE_OUTPUT].Count; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    Console.Write(((double[])splines[(int)Splines.VOLTAGE_OUTPUT][i])[j] + " ");
+                }
+                Console.WriteLine();
+            }
+
             if (samples == null)
             {
                 samples = new SortedList[Enum.GetNames(typeof(Samples)).Length];
@@ -206,6 +215,17 @@ namespace fusor_control_interface
                 return;
             }
 
+            for (int i = 0; i < Enum.GetNames(typeof(Samples)).Length; i++)
+            {
+                if (samples[i].Count < 2)
+                {
+                    settingsToolStripMenuItem.ShowDropDown();
+                    calibrationToolStripMenuItem.Select();
+                    MessageBox.Show("Two calibration samples required per field.", "Fusor Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+            }
+
             serial_port = new SerialPort(port_name, 115200);
             serial_port.ReadTimeout = 1000;
             serial_port.WriteTimeout = 1000;
@@ -243,6 +263,11 @@ namespace fusor_control_interface
 
             setControls(true);
             setMenu(false);
+
+            serialWrite((int)Commands.SET_REGULATOR_SETPOINT + " " + constants[(int)Constants.REGULATOR_SETPOINT]);
+            serialWrite((int)Commands.SET_REGULATOR_TUNINGS + " " + constants[(int)Constants.REGULATOR_KP] + " " + constants[(int)Constants.REGULATOR_KI] + " " + constants[(int)Constants.REGULATOR_KD]);
+            serialWrite((int)Commands.SET_PRESSURE_TUNINGS + " " + constants[(int)Constants.PRESSURE_KP] + " " + constants[(int)Constants.PRESSURE_KI] + " " + constants[(int)Constants.PRESSURE_KD]);
+            serialWrite((int)Commands.SET_PRESSURE_LIMITS + " " + constants[(int)Constants.PRESSURE_MIN] + " " + constants[(int)Constants.PRESSURE_MAX]);
 
             update_thread = new Thread(updateThread);
             update_thread.Start();
@@ -303,7 +328,7 @@ namespace fusor_control_interface
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            serialWrite((int)Commands.SET_PRESSURE_SETPOINT + " " + calculateSpline((double)numericUpDown1.Value, splines[(int)Splines.PRESSURE_OUTPUT]));
+            serialWrite((int)Commands.SET_PRESSURE_SETPOINT + " " + calculateValue((int)numericUpDown1.Value, splines[(int)Splines.PRESSURE_OUTPUT]));
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -318,7 +343,7 @@ namespace fusor_control_interface
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            serialWrite((int)Commands.SET_VOLTAGE_OUTPUT + " " + calculateSpline((double)numericUpDown2.Value, splines[(int)Splines.VOLTAGE_OUTPUT]));
+            serialWrite((int)Commands.SET_VOLTAGE_OUTPUT + " " + calculateValue((int)numericUpDown2.Value, splines[(int)Splines.VOLTAGE_OUTPUT]));
         }
 
         private void calibrationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -429,8 +454,7 @@ namespace fusor_control_interface
         private void updateThread()
         {
             bool pump, hv;
-            int sleep;
-            double pressure, voltage, current, count;
+            int pressure, voltage, current, count, sleep;
             ulong time = 0;
             Stopwatch stopwatch = new Stopwatch();
 
@@ -444,22 +468,22 @@ namespace fusor_control_interface
                 try
                 {
                     serial_port.WriteLine(Convert.ToString((int)Commands.GET_PUMP_INPUT));
-                    pump = (serial_port.ReadLine().Substring(0, 1) == "1");
+                    pump = serial_port.ReadLine().Substring(0, 1) == "1";
 
                     serial_port.WriteLine(Convert.ToString((int)Commands.GET_PRESSURE_INPUT));
-                    pressure = calculateSpline(Convert.ToDouble(serial_port.ReadLine()), splines[(int)Splines.PRESSURE_INPUT]);
+                    pressure = calculateValue(Convert.ToInt32(serial_port.ReadLine()), splines[(int)Splines.PRESSURE_INPUT]);
 
                     serial_port.WriteLine(Convert.ToString((int)Commands.GET_HV_INPUT));
-                    hv = (serial_port.ReadLine().Substring(0, 1) == "1");
+                    hv = serial_port.ReadLine().Substring(0, 1) == "1";
 
                     serial_port.WriteLine(Convert.ToString((int)Commands.GET_VOLTAGE_INPUT));
-                    voltage = calculateSpline(Convert.ToDouble(serial_port.ReadLine()), splines[(int)Splines.VOLTAGE_INPUT]);
+                    voltage = calculateValue(Convert.ToInt32(serial_port.ReadLine()), splines[(int)Splines.VOLTAGE_INPUT]);
 
                     serial_port.WriteLine(Convert.ToString((int)Commands.GET_CURRENT_INPUT));
-                    current = calculateSpline(Convert.ToDouble(serial_port.ReadLine()), splines[(int)Splines.CURRENT_INPUT]);
+                    current = calculateValue(Convert.ToInt32(serial_port.ReadLine()), splines[(int)Splines.CURRENT_INPUT]);
 
                     serial_port.WriteLine(Convert.ToString((int)Commands.GET_COUNT_INPUT));
-                    count = calculateSpline(Convert.ToDouble(serial_port.ReadLine()), splines[(int)Splines.COUNT_INPUT]);
+                    count = calculateValue(Convert.ToInt32(serial_port.ReadLine()), splines[(int)Splines.COUNT_INPUT]);
 
                     this.BeginInvoke(update_delagate, pump, pressure, hv, voltage, current, count);
 
@@ -515,10 +539,9 @@ namespace fusor_control_interface
             }
         }
 
-        private double calculateSpline(double input, ArrayList spline)
+        private int calculateValue(int input, ArrayList spline)
         {
-            int spline_index;
-            double output = 0;
+            int spline_index, output = 0;
 
             for (spline_index = 0; spline_index < spline.Count; spline_index++)
             {
@@ -535,7 +558,7 @@ namespace fusor_control_interface
 
             for (int i = 0; i < 4; i++)
             {
-                output += ((double[])spline[spline_index])[i] * Math.Pow((input - ((double[])spline[spline_index])[4]), i);
+                output += (int)Math.Round(((double[])spline[spline_index])[i] * Math.Pow(input - ((double[])spline[spline_index])[4], i));
             }
 
             return output;

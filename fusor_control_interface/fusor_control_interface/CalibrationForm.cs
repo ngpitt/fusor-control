@@ -114,23 +114,21 @@ namespace fusor_control_interface
         {
             SortedList pressure_output_samples = new SortedList();
 
-            try
-            {
-                form1.samples[(int)Samples.PRESSURE_INPUT].Add(pressure, numericUpDown5.Value);
-            }
-            catch
+            if (form1.samples[(int)Samples.PRESSURE_INPUT].ContainsKey(pressure) || form1.samples[(int)Samples.PRESSURE_INPUT].ContainsValue(numericUpDown5.Value))
             {
                 MessageBox.Show("Sample already exists.", "Fusor Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
+
+            form1.samples[(int)Samples.PRESSURE_INPUT].Add(pressure, numericUpDown5.Value);
 
             for (int i = 0; i < form1.samples[(int)Samples.PRESSURE_INPUT].Count; i++)
             {
                 pressure_output_samples.Add(form1.samples[(int)Samples.PRESSURE_INPUT].GetByIndex(i), form1.samples[(int)Samples.PRESSURE_INPUT].GetKey(i));
             }
 
-            updateSpline(form1.samples[(int)Samples.PRESSURE_INPUT], form1.splines[(int)Splines.PRESSURE_INPUT]);
-            updateSpline(pressure_output_samples, form1.splines[(int)Splines.PRESSURE_OUTPUT]);
+            form1.splines[(int)Splines.PRESSURE_INPUT] = calculateSpline(form1.samples[(int)Samples.PRESSURE_INPUT]);
+            form1.splines[(int)Splines.PRESSURE_OUTPUT] = calculateSpline(pressure_output_samples);
 
             label11.Text = "Samples: " + form1.samples[(int)Samples.PRESSURE_INPUT].Count;
         }
@@ -151,17 +149,14 @@ namespace fusor_control_interface
 
         private void button7_Click(object sender, EventArgs e)
         {
-            try
-            {
-                form1.samples[(int)Samples.VOLTAGE_OUTPUT].Add(numericUpDown6.Value, numericUpDown7.Value);
-            }
-            catch
+            if (form1.samples[(int)Samples.VOLTAGE_OUTPUT].ContainsKey(numericUpDown7.Value) || form1.samples[(int)Samples.VOLTAGE_OUTPUT].ContainsValue(numericUpDown6.Value))
             {
                 MessageBox.Show("Sample already exists.", "Fusor Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            updateSpline(form1.samples[(int)Samples.VOLTAGE_OUTPUT], form1.splines[(int)Splines.VOLTAGE_OUTPUT]);
+            form1.samples[(int)Samples.VOLTAGE_OUTPUT].Add(numericUpDown7.Value, numericUpDown6.Value);
+            form1.splines[(int)Splines.VOLTAGE_OUTPUT] = calculateSpline(form1.samples[(int)Samples.VOLTAGE_OUTPUT]);
 
             label15.Text = "Samples: " + form1.samples[(int)Samples.VOLTAGE_OUTPUT].Count;
         }
@@ -206,17 +201,14 @@ namespace fusor_control_interface
 
         private void button9_Click(object sender, EventArgs e)
         {
-            try
-            {
-                form1.samples[(int)Samples.VOLTAGE_INPUT].Add(voltage, numericUpDown13.Value);
-            }
-            catch
+            if (form1.samples[(int)Samples.VOLTAGE_INPUT].ContainsKey(voltage) || form1.samples[(int)Samples.VOLTAGE_INPUT].ContainsValue(numericUpDown13.Value))
             {
                 MessageBox.Show("Sample already exists.", "Fusor Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            updateSpline(form1.samples[(int)Samples.VOLTAGE_INPUT], form1.splines[(int)Splines.VOLTAGE_INPUT]);
+            form1.samples[(int)Samples.VOLTAGE_INPUT].Add(voltage, numericUpDown13.Value);
+            form1.splines[(int)Splines.VOLTAGE_INPUT] = calculateSpline(form1.samples[(int)Samples.VOLTAGE_INPUT]);
 
             label24.Text = "Samples: " + form1.samples[(int)Samples.VOLTAGE_INPUT].Count;
         }
@@ -231,17 +223,14 @@ namespace fusor_control_interface
 
         private void button11_Click(object sender, EventArgs e)
         {
-            try
-            {
-                form1.samples[(int)Samples.COUNT_INPUT].Add(count, numericUpDown14.Value);
-            }
-            catch
+            if (form1.samples[(int)Samples.COUNT_INPUT].ContainsKey(count) || form1.samples[(int)Samples.COUNT_INPUT].ContainsValue(numericUpDown14.Value))
             {
                 MessageBox.Show("Sample already exists.", "Fusor Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            updateSpline(form1.samples[(int)Samples.COUNT_INPUT], form1.splines[(int)Splines.COUNT_INPUT]);
+            form1.samples[(int)Samples.COUNT_INPUT].Add(count, numericUpDown14.Value);
+            form1.splines[(int)Splines.COUNT_INPUT] = calculateSpline(form1.samples[(int)Samples.COUNT_INPUT]);
 
             label28.Text = "Samples: " + form1.samples[(int)Samples.COUNT_INPUT].Count;
         }
@@ -256,17 +245,14 @@ namespace fusor_control_interface
 
         private void button13_Click(object sender, EventArgs e)
         {
-            try
-            {
-                form1.samples[(int)Samples.CURRENT_INPUT].Add(current, numericUpDown15.Value);
-            }
-            catch
+            if (form1.samples[(int)Samples.CURRENT_INPUT].ContainsKey(current) || form1.samples[(int)Samples.CURRENT_INPUT].ContainsValue(numericUpDown15.Value))
             {
                 MessageBox.Show("Sample already exists.", "Fusor Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            updateSpline(form1.samples[(int)Samples.CURRENT_INPUT], form1.splines[(int)Splines.CURRENT_INPUT]);
+            form1.samples[(int)Samples.CURRENT_INPUT].Add(current, numericUpDown15.Value);
+            form1.splines[(int)Splines.CURRENT_INPUT] = calculateSpline(form1.samples[(int)Samples.CURRENT_INPUT]);
 
             label32.Text = "Samples: " + form1.samples[(int)Samples.CURRENT_INPUT].Count;
         }
@@ -365,7 +351,7 @@ namespace fusor_control_interface
             }
         }
 
-        private void updateSpline(SortedList points, ArrayList spline)
+        private ArrayList calculateSpline(SortedList points)
         {
             int n = points.Count - 1;
             double[] x = new double[n + 1];
@@ -378,6 +364,7 @@ namespace fusor_control_interface
             double[] l = new double[n + 1];
             double[] mu = new double[n + 1];
             double[] z = new double[n + 1];
+            ArrayList spline = new ArrayList();
 
             for (int i = 0; i <= n; i++)
             {
@@ -415,12 +402,12 @@ namespace fusor_control_interface
                 d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
             }
 
-            spline.Clear();
-
             for (int i = 0; i <= n - 1; i++)
             {
                 spline.Add(new double[] { a[i], b[i], c[i], d[i], x[i] });
             }
+
+            return spline;
         }
     }
 }

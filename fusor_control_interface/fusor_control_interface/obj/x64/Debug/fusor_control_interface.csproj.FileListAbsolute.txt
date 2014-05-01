@@ -7,3 +7,4 @@ C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\
 C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Debug\fusor_control_interface.pdb
 C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Debug\fusor_control_interface.ControlForm.resources
 C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Debug\fusor_control_interface.CalibrationForm.resources
+C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Debug\fusor_control_interface.csprojResolveAssemblyReference.cache

@@ -19,7 +19,7 @@ enum pins
 
 enum commands
 {
-  SET_REGULATOR_SETPOINT,
+  SET_REGULATOR_SETPOINT = 1,
   SET_REGULATOR_TUNINGS,
   SET_PRESSURE_SETPOINT,
   SET_PRESSURE_TUNINGS,
@@ -87,16 +87,16 @@ void loop()
     switch (Serial.parseInt())
     {
     case SET_REGULATOR_SETPOINT:
-      pressure_setpoint = Serial.parseInt();
+      regulator_setpoint = Serial.parseInt();
       break;
     case SET_REGULATOR_TUNINGS:
-      regulator_pid.SetTunings(Serial.parseInt(), Serial.parseInt(), Serial.parseInt());
+      regulator_pid.SetTunings(Serial.parseFloat(), Serial.parseFloat(), Serial.parseFloat());
       break;
     case SET_PRESSURE_SETPOINT:
       pressure_setpoint = Serial.parseInt();
       break;
     case SET_PRESSURE_TUNINGS:
-      pressure_pid.SetTunings(Serial.parseInt(), Serial.parseInt(), Serial.parseInt());
+      pressure_pid.SetTunings(Serial.parseFloat(), Serial.parseFloat(), Serial.parseFloat());
       break;
     case SET_PRESSURE_LIMITS:
       pressure_pid.SetOutputLimits(Serial.parseInt(), Serial.parseInt());
