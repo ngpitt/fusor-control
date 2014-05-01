@@ -11,65 +11,14 @@
     <Setting Name="LogFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="PressureSamples" Type="System.String" Scope="User">
+    <Setting Name="Samples" Type="System.Collections.SortedList[]" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="CountSamples" Type="System.String" Scope="User">
+    <Setting Name="Splines" Type="System.Collections.ArrayList[]" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="VoltageOutputSamples" Type="System.String" Scope="User">
+    <Setting Name="Constants" Type="System.Double[]" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="VoltageInputSamples" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="CurrentInputSamples" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ForwardPressureSpline" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ReversePressureSpline" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="CountSpline" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="VoltageOutputSpline" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="VoltageInputSpline" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="CurrentInputSpline" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="PressureMin" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PressureMax" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PressureKp" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PressureKi" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PressureKd" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="RegulatorSetpoint" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="RegulatorKp" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="RegulatorKi" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="RegulatorKd" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

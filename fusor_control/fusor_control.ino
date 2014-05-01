@@ -1,37 +1,40 @@
 #include <Servo.h>
 #include <PID_v1.h>
 
-#define PUMP_OUTPUT             3
-#define HV_OUTPUT               4
-#define REGULATOR_OUTPUT        5
-#define VOLTAGE_OUTPUT          6
-#define PUMP_INPUT              7
-#define HV_INPUT                8
-#define SERVO_OUTPUT            9
+enum pins
+{
+  PUMP_OUTPUT = 3,
+  HV_OUTPUT = 4,
+  REGULATOR_OUTPUT = 5,
+  VOLTAGE_OUTPUT = 6,
+  PUMP_INPUT = 7,
+  HV_INPUT = 8,
+  SERVO_OUTPUT = 9,
+  REGULATOR_INPUT = A0,
+  PRESSURE_INPUT = A1,
+  VOLTAGE_INPUT = A2,
+  CURRENT_INPUT = A3,
+  COUNT_INPUT = A4,
+};
 
-#define REGULATOR_INPUT         A0
-#define PRESSURE_INPUT          A1
-#define VOLTAGE_INPUT           A2
-#define CURRENT_INPUT           A3
-#define COUNT_INPUT             A4
+enum commands
+{
+  SET_REGULATOR_SETPOINT,
+  SET_REGULATOR_TUNINGS,
+  SET_PRESSURE_SETPOINT,
+  SET_PRESSURE_TUNINGS,
+  SET_PRESSURE_LIMITS,
+  SET_PUMP_OUTPUT,
+  SET_HV_OUTPUT,
+  SET_VOLTAGE_OUTPUT,
+  GET_PUMP_INPUT,
+  GET_HV_INPUT,
+  GET_PRESSURE_INPUT,
+  GET_VOLTAGE_INPUT,
+  GET_CURRENT_INPUT,
+  GET_COUNT_INPUT,
+};
 
-#define SET_REGULATOR_SETPOINT  1
-#define SET_REGULATOR_TUNINGS   2
-#define SET_PRESSURE_SETPOINT   3
-#define SET_PRESSURE_TUNINGS    4
-#define SET_PRESSURE_LIMITS     5
-#define SET_PUMP_OUTPUT         6
-#define SET_HV_OUTPUT           7
-#define SET_VOLTAGE_OUTPUT      8
-
-#define GET_PUMP_INPUT          9
-#define GET_HV_INPUT            10
-#define GET_PRESSURE_INPUT      11
-#define GET_VOLTAGE_INPUT       12
-#define GET_CURRENT_INPUT       13
-#define GET_COUNT_INPUT         14
-
-int buffer_index = 0;
 double regulator_input_value, regulator_output_value, regulator_setpoint = 0,
 pressure_input_value, pressure_output_value, pressure_setpoint = 0, last_pressure_output_value = 0;
 unsigned long last_update = millis();

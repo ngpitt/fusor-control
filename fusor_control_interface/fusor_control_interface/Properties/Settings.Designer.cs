@@ -61,241 +61,37 @@ namespace fusor_control_interface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string PressureSamples {
+        [global::System.Configuration.SettingsSerializeAs(global::System.Configuration.SettingsSerializeAs.Binary)]
+        public System.Collections.SortedList[] Samples {
             get {
-                return ((string)(this["PressureSamples"]));
+                return ((System.Collections.SortedList[])(this["Samples"]));
             }
             set {
-                this["PressureSamples"] = value;
+                this["Samples"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string CountSamples {
+        [global::System.Configuration.SettingsSerializeAs(global::System.Configuration.SettingsSerializeAs.Binary)]
+        public System.Collections.ArrayList[] Splines {
             get {
-                return ((string)(this["CountSamples"]));
+                return ((System.Collections.ArrayList[])(this["Splines"]));
             }
             set {
-                this["CountSamples"] = value;
+                this["Splines"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string VoltageOutputSamples {
+        [global::System.Configuration.SettingsSerializeAs(global::System.Configuration.SettingsSerializeAs.Binary)]
+        public double[] Constants {
             get {
-                return ((string)(this["VoltageOutputSamples"]));
+                return ((double[])(this["Constants"]));
             }
             set {
-                this["VoltageOutputSamples"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string VoltageInputSamples {
-            get {
-                return ((string)(this["VoltageInputSamples"]));
-            }
-            set {
-                this["VoltageInputSamples"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string CurrentInputSamples {
-            get {
-                return ((string)(this["CurrentInputSamples"]));
-            }
-            set {
-                this["CurrentInputSamples"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ForwardPressureSpline {
-            get {
-                return ((string)(this["ForwardPressureSpline"]));
-            }
-            set {
-                this["ForwardPressureSpline"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ReversePressureSpline {
-            get {
-                return ((string)(this["ReversePressureSpline"]));
-            }
-            set {
-                this["ReversePressureSpline"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string CountSpline {
-            get {
-                return ((string)(this["CountSpline"]));
-            }
-            set {
-                this["CountSpline"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string VoltageOutputSpline {
-            get {
-                return ((string)(this["VoltageOutputSpline"]));
-            }
-            set {
-                this["VoltageOutputSpline"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string VoltageInputSpline {
-            get {
-                return ((string)(this["VoltageInputSpline"]));
-            }
-            set {
-                this["VoltageInputSpline"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string CurrentInputSpline {
-            get {
-                return ((string)(this["CurrentInputSpline"]));
-            }
-            set {
-                this["CurrentInputSpline"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double PressureMin {
-            get {
-                return ((double)(this["PressureMin"]));
-            }
-            set {
-                this["PressureMin"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double PressureMax {
-            get {
-                return ((double)(this["PressureMax"]));
-            }
-            set {
-                this["PressureMax"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double PressureKp {
-            get {
-                return ((double)(this["PressureKp"]));
-            }
-            set {
-                this["PressureKp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double PressureKi {
-            get {
-                return ((double)(this["PressureKi"]));
-            }
-            set {
-                this["PressureKi"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double PressureKd {
-            get {
-                return ((double)(this["PressureKd"]));
-            }
-            set {
-                this["PressureKd"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double RegulatorSetpoint {
-            get {
-                return ((double)(this["RegulatorSetpoint"]));
-            }
-            set {
-                this["RegulatorSetpoint"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double RegulatorKp {
-            get {
-                return ((double)(this["RegulatorKp"]));
-            }
-            set {
-                this["RegulatorKp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double RegulatorKi {
-            get {
-                return ((double)(this["RegulatorKi"]));
-            }
-            set {
-                this["RegulatorKi"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double RegulatorKd {
-            get {
-                return ((double)(this["RegulatorKd"]));
-            }
-            set {
-                this["RegulatorKd"] = value;
+                this["Constants"] = value;
             }
         }
     }

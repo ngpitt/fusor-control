@@ -1,6 +1,6 @@
 ﻿namespace fusor_control_interface
 {
-    partial class Form2
+    partial class CalibrationForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CalibrationForm));
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
@@ -225,7 +225,7 @@
             this.groupBox5.Size = new System.Drawing.Size(400, 100);
             this.groupBox5.TabIndex = 5;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Reactor Pressure PID Tuning";
+            this.groupBox5.Text = "Reactor Pressure PID Tunings";
             // 
             // label18
             // 
@@ -468,7 +468,7 @@
             this.groupBox2.Size = new System.Drawing.Size(400, 100);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Voltage Regulator PID Tuning";
+            this.groupBox2.Text = "Voltage Regulator PID Tunings";
             // 
             // label5
             // 
@@ -921,7 +921,7 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "HV:";
             // 
-            // Form2
+            // CalibrationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -935,7 +935,7 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form2";
+            this.Name = "CalibrationForm";
             this.Text = "Fusor Control Calibration";
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
