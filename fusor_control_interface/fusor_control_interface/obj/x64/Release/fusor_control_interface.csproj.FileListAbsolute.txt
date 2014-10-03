@@ -1,9 +1,0 @@
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\bin\x64\Release\fusor_control_interface.exe.config
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\bin\x64\Release\fusor_control_interface.exe
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\bin\x64\Release\fusor_control_interface.pdb
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Release\fusor_control_interface.Properties.Resources.resources
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Release\fusor_control_interface.csproj.GenerateResource.Cache
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Release\fusor_control_interface.exe
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Release\fusor_control_interface.pdb
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Release\fusor_control_interface.ControlForm.resources
-C:\Users\ngpitt\Sync\Documents\Fusor\code\fusor-control\fusor_control_interface\fusor_control_interface\obj\x64\Release\fusor_control_interface.CalibrationForm.resources
